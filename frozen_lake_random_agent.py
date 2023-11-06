@@ -1,3 +1,7 @@
+# Zach Vincent
+# based on code from this online course:
+# https://www.udemy.com/course/deep-q-learning-from-paper-to-code/
+
 import gymnasium as gym
 import numpy as np
 import matplotlib.pyplot as plt
