@@ -12,4 +12,4 @@ The random agent performs poorly with ~10% win rate. (Frozen Lake)
 
 The Q table agent performs moderately better with ~40% win rate. (Frozen Lake)
 
-The deep Q neural net agent performs moderately well with a relatively high average score. (CartPole)
+The deep Q neural net agent performs moderately well with a relatively high average score, but fails to move past local minima as epsilon decreases to a minimum. This shows that effective learning cannot be achieved by tacking a neural net onto a Q agent. (CartPole)
