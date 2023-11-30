@@ -1,9 +1,13 @@
 # Zach Vincent
-# based on code from this online course:
+# based on code from this online course by Phil Tabor:
 # https://www.udemy.com/course/deep-q-learning-from-paper-to-code/
+
+import collections
+import cv2
 
 import matplotlib.pyplot as plt
 import numpy as np
+import gymnasium as gym
 
 def plot_learning_curve(x, scores, epsilons, filename):
     fig = plt.figure()
@@ -29,3 +33,10 @@ def plot_learning_curve(x, scores, epsilons, filename):
     ax2.tick_params(axis='y',colors="C1")
 
     plt.show()
+
+class RepeatActionAndMaxFrame(gym.Wrapper):
+    def __init__(self, env=None, repeat=4):
+        super(RepeatActionAndMaxFrame, self).__init__(env)
+        self.repeat = repeat
+        self.shape = env.observation_space.low.shape
+        self.frame_buffer = np.zeros_like((2, self.shape))

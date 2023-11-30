@@ -9,7 +9,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 import torch as T
-from util import plot_learning_curve
+#from util import plot_learning_curve
 
 class LinearDeepQNetwork(nn.Module):
     def __init__(self, lr, n_actions, input_dims):
@@ -18,6 +18,7 @@ class LinearDeepQNetwork(nn.Module):
 
         # build layers
         # input_dims is number of things we can observe about environment
+        print(f'input dims: {input_dims}:128')
         self.fc1 = nn.Linear(input_dims, 128)
         self.fc2 = nn.Linear(128, n_actions)
 
@@ -33,6 +34,8 @@ class LinearDeepQNetwork(nn.Module):
 
     def forward(self, state):
         # propagate data forward
+        print(state)
+        print('separator')
         layer1 = F.relu(self.fc1(state))
         actions = self.fc2(layer1)
 
