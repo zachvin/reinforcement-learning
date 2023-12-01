@@ -6,18 +6,18 @@ import utils
 if __name__ == '__main__':
     # training parameters
     load_checkpoint = False
-    n_games = 50
+    n_games = 10000
 
     # object creation
     env = gym.make('Pendulum-v1')
-    agent = DQNAgent(gamma      = 0.99,
+    agent = DQNAgent(gamma      = 0.90,
                      epsilon    = 1.0,
-                     lr         = 0.0001,
+                     lr         = 0.001,
                      input_dims = (3,),
                      n_actions  = 1,
-                     mem_size   = 30000,
+                     mem_size   = 50000,
                      eps_min    = 0.1,
-                     batch_size = 32,
+                     batch_size = 64,
                      replace    = 1000,
                      eps_dec    = 1e-5,
                      dir        = 'models/',
@@ -67,6 +67,10 @@ if __name__ == '__main__':
             if not load_checkpoint:
                 agent.save_models()
             best_score = avg_score
+
+        # print updates
+        if i % 50 == 0:
+            print(f'GAME {i}: Epsilon {agent.epsilon}, Avg. Score: {np.mean(scores_array[-50:])}')
 
         epsilon_array.append(agent.epsilon)
 

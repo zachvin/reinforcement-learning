@@ -27,10 +27,10 @@ class DeepQNetwork(nn.Module):
         self.file = os.path.join(self.dir, name)
 
         # generate neural network with input from observations
-        # hidden layer of 512
+        # hidden layer
         # output n_actions
-        self.fc1 = nn.Linear(input_dims, 512)
-        self.fc2 = nn.Linear(512, n_actions)
+        self.fc1 = nn.Linear(input_dims, 32)
+        self.fc2 = nn.Linear(32, n_actions)
         
         # set optimizer and loss functions
         self.optimizer = optim.RMSprop(self.parameters(), lr=lr)
