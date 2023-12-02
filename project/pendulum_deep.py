@@ -6,22 +6,24 @@ import utils
 if __name__ == '__main__':
     # training parameters
     load_checkpoint = False
-    n_games = 10000
+    n_games = 30
+
 
     # object creation
     env = gym.make('Pendulum-v1')
     agent = DQNAgent(gamma      = 0.90,
                      epsilon    = 1.0,
                      lr         = 0.001,
-                     input_dims = (3,),
-                     n_actions  = 1,
-                     mem_size   = 50000,
+                     input_dims = (3,), #env.observation_space.shape,
+                     n_actions  = 1, #env.action_space.shape[0],
+                     mem_size   = 30000,
                      eps_min    = 0.1,
                      batch_size = 64,
                      replace    = 1000,
                      eps_dec    = 1e-5,
                      dir        = 'models/',
-                     name       = 'Pendulum-v1')
+                     name       = 'Pendulum-v1',
+                     env        = env)
     
     # load checkpoint if evaluating pretrained model
     if load_checkpoint:
@@ -36,6 +38,8 @@ if __name__ == '__main__':
     for i in range(n_games):
         # start new episode
         score = 0
+        
+        # observation has shape (3, 1), i.e. [[x][x][x]]
         observation, info = env.reset()
         terminated, truncated = False, False
 

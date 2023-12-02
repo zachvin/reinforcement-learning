@@ -10,7 +10,7 @@ from replay_buffer import ReplayBuffer
 class DQNAgent():
     def __init__(self, gamma:float, epsilon:float, lr, n_actions, input_dims,
                  mem_size, batch_size, eps_min=0.01, eps_dec=5e-7,
-                 replace=1000, algo=None, name=None, dir='tmp/dqn'):
+                 replace=1000, name=None, dir='tmp/dqn', env=None):
                  
         self.gamma          = gamma
         self.epsilon        = epsilon
@@ -23,8 +23,10 @@ class DQNAgent():
         self.replace        = replace
         self.name           = name
         self.dir            = dir
+        self.env            = env
 
-        self.action_space   = [i for i in range(self.n_actions)]
+        assert self.env is not None, 'No environment specified in DQNAgent instantiation'
+
         self.learn_counter  = 0
 
         # build memory buffer
@@ -48,14 +50,14 @@ class DQNAgent():
         # choose learned action
         if np.random.random() > self.epsilon:
             state = T.tensor(np.array(observation), dtype=T.float).to(self.q_eval.device)
-            actions = self.q_eval.forward(state)
+            actions = self.q_eval.forward(state.reshape(1,3))
 
             # argmax returns tensor
             action = T.argmax(actions).item()
 
         # choose random action
         else:
-            action = np.random.choice(self.action_space)
+            action = np.random.uniform(self.env.action_space.low, self.env.action_space.high)
 
         return action
 
@@ -108,8 +110,9 @@ class DQNAgent():
 
         # here we use indices to make sure output has shape batch_size
         indices = np.arange(self.batch_size)
-        q_pred = self.q_eval.forward(states)[indices, actions]
-        q_next = self.q_next.forward(states_).max(dim=1)[0]
+
+        q_pred = self.q_eval.forward(states.reshape(64,3))[indices].reshape(64)
+        q_next = self.q_next.forward(states_.reshape(64,3)).max(dim=1)[0]
 
         q_next[dones] = 0.0
         q_target = rewards + self.gamma*q_next

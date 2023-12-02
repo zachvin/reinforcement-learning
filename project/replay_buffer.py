@@ -26,9 +26,9 @@ class ReplayBuffer():
         self.index = 0
 
         # build all memories
-        self.mem_state      = np.zeros((self.mem_size, *input_shape),dtype=np.float32)
-        self.mem_new_state  = np.zeros((self.mem_size, *input_shape),dtype=np.float32)
-        self.mem_action     = np.zeros(self.mem_size, dtype=np.int64)
+        self.mem_state      = np.zeros((self.mem_size, 3, 1),dtype=np.float32)
+        self.mem_new_state  = np.zeros((self.mem_size, 3, 1),dtype=np.float32)
+        self.mem_action     = np.zeros(self.mem_size, dtype=np.float32)
         self.mem_reward     = np.zeros(self.mem_size, dtype=np.float32)
         self.mem_terminal   = np.zeros(self.mem_size, dtype=np.bool_)
 
@@ -37,9 +37,18 @@ class ReplayBuffer():
         # get index, overwrite memories after mem_size reached
         index = self.index % self.mem_size
 
+        '''
+        print(f'memory {self.mem_state}')
+        print(f'nmemory {self.mem_new_state}')
+        print(f'state {state.reshape(3,)}')
+        print(f'nstate {state_.reshape(3)}')
+        print(f'index {self.mem_state[index]}')
+        '''
+        
+
         # fill in each memory type
-        self.mem_state[index]       = state
-        self.mem_new_state[index]   = state_
+        self.mem_state[index]       = state.reshape(3, 1)
+        self.mem_new_state[index]   = state_.reshape(3, 1)
         self.mem_action[index]      = action
         self.mem_reward[index]      = reward
         self.mem_terminal[index]    = done
