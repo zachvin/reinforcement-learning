@@ -1,8 +1,8 @@
 import matplotlib.pyplot as plt
 
 def plot_model(steps, scores, avg_scores, epsilons, name):
-    plt.cla();
-    plt.clf();
+    plt.cla()
+    plt.clf()
     
     fig, ax1 = plt.subplots()
 

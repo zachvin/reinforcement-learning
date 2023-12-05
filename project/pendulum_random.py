@@ -1,3 +1,5 @@
+# Zach Vincent
+
 import gymnasium as gym
 import matplotlib.pyplot as plt
 

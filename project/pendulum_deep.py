@@ -1,3 +1,7 @@
+# Zach Vincent
+# based on code from this online course by Phil Tabor:
+# https://www.udemy.com/course/deep-q-learning-from-paper-to-code/
+
 import numpy as np
 from deep_agent import DQNAgent
 import gymnasium as gym
