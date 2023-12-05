@@ -80,4 +80,4 @@ class DeepQNetwork(nn.Module):
 
         print(f'[INFO] Loading checkpoint {net_name}...')
         # loads dictionary from file
-        self.load_state_dict(T.load(self.file))
+        self.load_state_dict(T.load(f'models/best_{net_name}'))

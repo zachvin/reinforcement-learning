@@ -5,11 +5,15 @@ import utils
 
 if __name__ == '__main__':
     # training parameters
-    load_checkpoint = False
-    n_games = 15000
+    load_checkpoint = True
+    n_games = 10
 
     # object creation
-    env = gym.make('Pendulum-v1')
+    env = None
+    if load_checkpoint:
+        env = gym.make('Pendulum-v1', render_mode='human')
+    else:
+        env = gym.make('Pendulum-v1')
     agent = DQNAgent(gamma      = 0.9,
                      epsilon    = 1.0,
                      lr         = 0.001,
@@ -45,7 +49,7 @@ if __name__ == '__main__':
 
         # begin training
         while not terminated and not truncated:
-            action = agent.choose_action(observation)
+            action = agent.choose_action(observation, load_checkpoint)
 
             observation_, reward, terminated, truncated, info = env.step([(action-5)*.2])
             score += reward
@@ -64,7 +68,6 @@ if __name__ == '__main__':
         
         scores_array.append(score)
         avg_score = np.mean(scores_array[-100:])
-        #print(f'episode {i} score: {score} average score {avg_score} best score {best_score} epsilon {agent.epsilon} steps {n_steps}')
 
         # if average score of last 100 episodes is better than our previous
         # best, save progress in file
@@ -80,5 +83,5 @@ if __name__ == '__main__':
         # print updates
         print(f'GAME: {i},\tEpsilon: {agent.epsilon:7.2f}, Score: {score:7.2f} Avg. Score: {np.mean(scores_array[-50:]):7.2f}')
 
-
-    utils.plot_model(epochs_array, scores_array, avgs_array, epsilon_array, figure_name)
+    if not load_checkpoint:
+        utils.plot_model(epochs_array, scores_array, avgs_array, epsilon_array, figure_name)

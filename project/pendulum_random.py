@@ -1,22 +1,19 @@
 import gymnasium as gym
 import matplotlib.pyplot as plt
 
-env = gym.make('Pendulum-v1')
+env = gym.make('Pendulum-v1', render_mode='human')
 observation, info = env.reset()
 
 score = 0
+n_games = 5
 rewards = []
-for _ in range(100):
-    action = env.action_space.sample()
-    observation, reward, terminated, truncated, info = env.step(action)
-    score += reward
-    rewards.append(score)
-
-    print(f'Reward: {reward}')
-    if terminated or truncated:
-        observation, info = env.reset()
+for i in range(n_games):
+    terminated, truncated = False, False
+    while not terminated and not truncated:
+        action = env.action_space.sample()
+        observation, reward, terminated, truncated, info = env.step(action)
+        
+        if terminated or truncated:
+            observation, info = env.reset()
 
 env.close()
-
-plt.plot(range(100), rewards)
-plt.show()

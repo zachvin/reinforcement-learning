@@ -47,9 +47,9 @@ class DQNAgent():
                                    name         = self.name + '_deep_q_next',
                                    dir          = self.dir)
 
-    def choose_action(self, observation):
+    def choose_action(self, observation, evaluate):
         # choose learned action
-        if np.random.random() > self.epsilon:
+        if evaluate or np.random.random() > self.epsilon:
             # state is tensor object with shape (3,)
             state = T.tensor(observation, dtype=T.float).to(self.q_eval.device)
             actions = self.q_eval.forward(state)
@@ -95,8 +95,8 @@ class DQNAgent():
         self.q_next.save_checkpoint('q_next')
 
     def load_models(self):
-        self.q_eval.load_checkpoint('q_eval')
-        self.q_next.load_checkpoint('q_next')
+        self.q_eval.load_checkpoint('eval')
+        self.q_next.load_checkpoint('next')
 
     def learn(self):
         # wait until batch is filled up
