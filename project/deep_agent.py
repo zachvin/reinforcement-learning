@@ -98,6 +98,9 @@ class DQNAgent():
         self.q_eval.load_checkpoint('q_eval')
         self.q_next.load_checkpoint('q_next')
 
+    def update_learning_rate(self, factor):
+        pass
+
     def learn(self):
         # wait until batch is filled up
         if self.buffer.index < self.batch_size:
@@ -117,14 +120,7 @@ class DQNAgent():
         # gives predicted action values for batch of states
         # looking for value of actions taken in batch of states
         q_pred = self.q_eval.forward(states.reshape(self.batch_size,3))[indices, actions]
-        '''
-        print(q_pred)
-        print(actions)
-        print(q_pred[indices])
-        print(q_pred[indices, actions])
-        time.sleep(10)
-        '''
-
+     
         # find value for maximal actions for set of states
         # what are max values of next states, and move action predictions toward
         # that value
@@ -141,3 +137,5 @@ class DQNAgent():
         self.learn_counter += 1
 
         self.decrement_epsilon()
+
+        return loss.item()

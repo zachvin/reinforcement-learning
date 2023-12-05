@@ -6,21 +6,21 @@ import utils
 if __name__ == '__main__':
     # training parameters
     load_checkpoint = False
-    n_games = 500
+    n_games = 5000
 
 
     # object creation
     env = gym.make('Pendulum-v1')
-    agent = DQNAgent(gamma      = 0.90,
+    agent = DQNAgent(gamma      = 0.9,
                      epsilon    = 1.0,
                      lr         = 0.001,
                      input_dims = (3,), #env.observation_space.shape,
                      n_actions  = 10, #env.action_space.shape[0],
-                     mem_size   = 30000,
+                     mem_size   = 100000,
                      eps_min    = 0.1,
-                     batch_size = 8,
+                     batch_size = 32,
                      replace    = 1000,
-                     eps_dec    = 1e-5,
+                     eps_dec    = 3e-6,
                      dir        = 'models/',
                      name       = 'Pendulum-v1',
                      env        = env)
@@ -35,9 +35,11 @@ if __name__ == '__main__':
     best_score = -np.inf    # best total score achieved by an episode
     n_steps = 0             # total number of steps taken in all episodes
     scores_array, epsilon_array, steps_array = [], [], []
+    losses_array = []
     for i in range(n_games):
         # start new episode
         score = 0
+        loss = None
         
         # observation is numpy.ndarray with shape (3,)
         observation, info = env.reset()
@@ -54,12 +56,13 @@ if __name__ == '__main__':
             if not load_checkpoint:
                 agent.store_memory(observation, action, reward,
                                        observation_, terminated or truncated)
-                agent.learn()
+                loss = agent.learn()
             
             # update observation
             observation = observation_
             n_steps += 1
 
+        losses_array.append(loss)
         scores_array.append(score)
         steps_array.append(n_steps)
 
@@ -73,9 +76,14 @@ if __name__ == '__main__':
                 agent.save_models()
             best_score = avg_score
 
+        # change learning rate
+        #if i % 500 == 0:
+        #    agent.update_learning_rate(0.9)
+
         # print updates
         print(f'GAME: {i},\tEpsilon: {agent.epsilon:7.2f}, Score: {score:7.2f} Avg. Score: {np.mean(scores_array[-50:]):7.2f}')
 
         epsilon_array.append(agent.epsilon)
 
     utils.plot_model(steps_array, scores_array, epsilon_array, figure_name)
+    utils.plot_loss([_ for _ in range(len(losses_array))], losses_array, 'none')
