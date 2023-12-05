@@ -6,8 +6,7 @@ import utils
 if __name__ == '__main__':
     # training parameters
     load_checkpoint = False
-    n_games = 5000
-
+    n_games = 15000
 
     # object creation
     env = gym.make('Pendulum-v1')
@@ -16,11 +15,11 @@ if __name__ == '__main__':
                      lr         = 0.001,
                      input_dims = (3,), #env.observation_space.shape,
                      n_actions  = 10, #env.action_space.shape[0],
-                     mem_size   = 100000,
+                     mem_size   = 50000,
                      eps_min    = 0.1,
                      batch_size = 32,
                      replace    = 1000,
-                     eps_dec    = 3e-6,
+                     eps_dec    = 1.5e-6,
                      dir        = 'models/',
                      name       = 'Pendulum-v1',
                      env        = env)
@@ -33,13 +32,12 @@ if __name__ == '__main__':
     figure_name = 'plots/' + agent_name + '.png'
 
     best_score = -np.inf    # best total score achieved by an episode
-    n_steps = 0             # total number of steps taken in all episodes
-    scores_array, epsilon_array, steps_array = [], [], []
-    losses_array = []
+    n_epochs = 0             # total number of steps taken in all episodes
+    scores_array, epsilon_array, epochs_array = [], [], []
+    avgs_array = []
     for i in range(n_games):
         # start new episode
         score = 0
-        loss = None
         
         # observation is numpy.ndarray with shape (3,)
         observation, info = env.reset()
@@ -56,16 +54,15 @@ if __name__ == '__main__':
             if not load_checkpoint:
                 agent.store_memory(observation, action, reward,
                                        observation_, terminated or truncated)
-                loss = agent.learn()
+                agent.learn()
             
             # update observation
             observation = observation_
-            n_steps += 1
+        
+        n_epochs += 1
 
-        losses_array.append(loss)
+        
         scores_array.append(score)
-        steps_array.append(n_steps)
-
         avg_score = np.mean(scores_array[-100:])
         #print(f'episode {i} score: {score} average score {avg_score} best score {best_score} epsilon {agent.epsilon} steps {n_steps}')
 
@@ -76,14 +73,12 @@ if __name__ == '__main__':
                 agent.save_models()
             best_score = avg_score
 
-        # change learning rate
-        #if i % 500 == 0:
-        #    agent.update_learning_rate(0.9)
+        avgs_array.append(avg_score)
+        epochs_array.append(n_epochs)
+        epsilon_array.append(agent.epsilon)
 
         # print updates
         print(f'GAME: {i},\tEpsilon: {agent.epsilon:7.2f}, Score: {score:7.2f} Avg. Score: {np.mean(scores_array[-50:]):7.2f}')
 
-        epsilon_array.append(agent.epsilon)
 
-    utils.plot_model(steps_array, scores_array, epsilon_array, figure_name)
-    utils.plot_loss([_ for _ in range(len(losses_array))], losses_array, 'none')
+    utils.plot_model(epochs_array, scores_array, avgs_array, epsilon_array, figure_name)
