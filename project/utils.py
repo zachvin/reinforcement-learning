@@ -1,3 +1,7 @@
+# Zach Vincent
+# based on code from this online course by Phil Tabor:
+# https://www.udemy.com/course/deep-q-learning-from-paper-to-code/
+
 import matplotlib.pyplot as plt
 
 def plot_model(steps, scores, avg_scores, epsilons, name):
