@@ -6,6 +6,7 @@ import numpy as np
 import torch as T
 from deep_network import DeepQNetwork
 from replay_buffer import ReplayBuffer
+import time
 
 class DQNAgent():
     def __init__(self, gamma:float, epsilon:float, lr, n_actions, input_dims,
@@ -46,18 +47,20 @@ class DQNAgent():
                                    name         = self.name + '_deep_q_next',
                                    dir          = self.dir)
 
-    def choose_action(self, observation):
+    def choose_action(self, observation, evaluate):
         # choose learned action
-        if np.random.random() > self.epsilon:
-            state = T.tensor(np.array(observation), dtype=T.float).to(self.q_eval.device)
-            actions = self.q_eval.forward(state.reshape(1,3))
+        if evaluate or np.random.random() > self.epsilon:
+            # state is tensor object with shape (3,)
+            state = T.tensor(observation, dtype=T.float).to(self.q_eval.device)
+            actions = self.q_eval.forward(state)
 
             # argmax returns tensor
             action = T.argmax(actions).item()
 
         # choose random action
         else:
-            action = np.random.uniform(self.env.action_space.low, self.env.action_space.high)
+            #action = np.random.uniform(self.env.action_space.low, self.env.action_space.high)
+            action = np.random.choice([_ for _ in range(10)])
 
         return action
 
@@ -92,8 +95,8 @@ class DQNAgent():
         self.q_next.save_checkpoint('q_next')
 
     def load_models(self):
-        self.q_eval.load_checkpoint('q_eval')
-        self.q_next.load_checkpoint('q_next')
+        self.q_eval.load_checkpoint('eval')
+        self.q_next.load_checkpoint('next')
 
     def learn(self):
         # wait until batch is filled up
@@ -111,8 +114,14 @@ class DQNAgent():
         # here we use indices to make sure output has shape batch_size
         indices = np.arange(self.batch_size)
 
-        q_pred = self.q_eval.forward(states.reshape(64,3))[indices].reshape(64)
-        q_next = self.q_next.forward(states_.reshape(64,3)).max(dim=1)[0]
+        # gives predicted action values for batch of states
+        # looking for value of actions taken in batch of states
+        q_pred = self.q_eval.forward(states.reshape(self.batch_size,3))[indices, actions]
+
+        # find value for maximal actions for set of states
+        # what are max values of next states, and move action predictions toward
+        # that value
+        q_next = self.q_next.forward(states_.reshape(self.batch_size,3)).max(dim=1)[0]
 
         q_next[dones] = 0.0
         q_target = rewards + self.gamma*q_next

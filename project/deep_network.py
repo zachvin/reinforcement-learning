@@ -35,7 +35,11 @@ class DeepQNetwork(nn.Module):
         # set optimizer and loss functions
         self.optimizer = optim.RMSprop(self.parameters(), lr=lr)
         self.loss = nn.MSELoss()
-        self.device = T.device('cuda:0' if T.cuda.is_available() else 'cpu')
+
+        # since processing isn't parallel, use CPU instead of GPU
+        self.device = T.device('cpu')
+        T.set_num_threads(2)
+        print(f'Using {self.device}')
         self.to(self.device)
 
     # calculate feed forward
@@ -49,16 +53,11 @@ class DeepQNetwork(nn.Module):
 
         Returns: list of action probabilities.
         '''
-        # state shape = batch size * (state.shape=3)
-        # first fully-connected layer takes shape:
-        # batch size * # input features
-        # view() similar to np.reshape()
-        #flat_state = state.view(3,-1)
-                                #batch size      flatten rest of dims
+
         hidden = F.relu(self.fc1(state))
         actions = self.fc2(hidden)
 
-        return actions
+        return actions        
 
 
     def save_checkpoint(self, net_name:str) -> None:
@@ -81,4 +80,4 @@ class DeepQNetwork(nn.Module):
 
         print(f'[INFO] Loading checkpoint {net_name}...')
         # loads dictionary from file
-        self.load_state_dict(T.load(self.file))
+        self.load_state_dict(T.load(f'models/best_{net_name}'))
