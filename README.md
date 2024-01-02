@@ -1,6 +1,17 @@
 # reinforcement-learning
 ### Introduction
 This repository houses a series of files meant to introduce the topic of reinforcement learning and apply it to a continuous state space to control a pendulum in OpenAI's Gymnasium.
+See the project demonstration [here](https://youtu.be/0mDYZusld8Y).
+
+| File name | File type | Description |
+| --- | --- | --- |
+| `pendulum_deep.py` | Main file | Main loop; constructs agent object, observes and manipulates environment |
+| `deep_agent.py` | Agent class | Constructs network object, contains functions for choosing actions, storing memories, and learning |
+| `deep_network.py` | Network class | Builds Torch neural network and contains functions for saving network weights for future evaluation |
+| `replay_buffer.py` | Memory buffer class | Handles memory control, contains functions for appending to and sampling from memory |
+| `utils.py` | Plotting tools | Modularizes plotting learning rates |
+
+
 
 ### Setup
 Python 3.10 is used, but Python 3.8 also appears to work as intended.
