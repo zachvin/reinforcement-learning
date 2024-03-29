@@ -1,7 +1,7 @@
 # reinforcement-learning
 ### Introduction
 This repository houses a series of files meant to introduce the topic of reinforcement learning and apply it to a continuous state space to control a pendulum in OpenAI's Gymnasium.
-See the project demonstration [here](https://youtu.be/0mDYZusld8Y).
+See the project demonstration [here](https://youtu.be/0mDYZusld8Y) and learn more about my findings [here](https://zach-vincent.com/projects/pendulum.html).
 
 | File name | File type | Description |
 | --- | --- | --- |
